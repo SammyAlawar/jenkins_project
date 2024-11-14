@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    
+    environment {
+        VIRTUAL_ENV = 'venv'  // Set virtual environment folder name
+    }
+    
+    stages {
+        
+        // Setup Stage: Create virtual environment and install dependencies
+        stage('Setup') {
+            steps {
+                script {
+                    // Check if the virtual environment exists
+                    if (!fileExists("${env.WORKSPACE}/${VIRTUAL_ENV}")) {
+                        // Create virtual environment if it doesn't exist
+                        sh "python -m venv ${VIRTUAL_ENV}"
+                    }
+                    // Install dependencies from requirements.txt
+                    sh "source ${VIRTUAL_ENV}/bin/activate && pip install -r requirements.txt"
+                }
+            }
+        }
+        
+        // Lint Stage: Run flake8 to check Python code style
+        stage('Lint') {
+            steps {
+                script {
+                    // Run flake8 on the app.py (or your main script)
+                    sh "source ${VIRTUAL_ENV}/bin/activate && flake8 app.py"
+                }
+            }
+        }
+        
+        // Test Stage: Run tests using pytest
+        stage('Test') {
+            steps {
+                script {
+                    // Run tests using pytest
+                    sh "source ${VIRTUAL_ENV}/bin/activate && pytest"
+                }
+            }
+        }
+        
+        // Deploy Stage: Deploy the application (e.g., pushing to a server or cloud)
+        stage('Deploy') {
+            steps {
+                script {
+                    // Placeholder for deployment logic
+                    echo "Deploying application..."
+                    // Add your actual deployment commands here (e.g., SSH, Docker, etc.)
+                }
+            }
+        }
+    }
+
+    // Post Actions: Clean workspace after the pipeline finishes
+    post {
+        always {
+            // Clean the workspace after every run
+            cleanWs()
+        }
+    }
+}
