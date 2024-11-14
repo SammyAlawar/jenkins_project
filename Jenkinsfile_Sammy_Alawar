@@ -49,7 +49,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate.bat && pytest"
+                    bat "set PYTHONPATH=%CD% && .\\${VIRTUAL_ENV}\\Scripts\\activate.bat && pytest"
                 }
             }
         }
